@@ -30,6 +30,7 @@ jobs:
           script: |
             const prDetailsUrl = context.payload.issue.pull_request.url;
             const { data: pull } = await github.request(prDetailsUrl);
+            console.log(pull)
 
             const reviewers = pull.data.requested_reviewers.map(reviewer => reviewer.login);
 
