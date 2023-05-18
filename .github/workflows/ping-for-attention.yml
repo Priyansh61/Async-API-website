@@ -12,54 +12,6 @@ on:
         types: [created]
 
 jobs:
-<<<<<<< Updated upstream
-    ping-for-attention: 
-        if: >
-            github.event.issue.pull_request &&
-            github.event.issue.state != 'closed' &&
-            github.actor != 'asyncapi-bot' &&
-            (
-                contains(github.event.comment.body, '/re') ||
-                contains(github.event.comment.body, '/pfa')
-            )
-        runs-on: ubuntu-latest
-        steps:
-            - name : Check for Ping for Attention Command
-              uses : actions/github-script@v6
-              with: 
-                github-token: ${{secrets.GH_TOKEN}}
-                script : |
-                    const prDetails = await github.pulls.get({
-                        owner: context.repo.owner,
-                        repo: context.repo.repo,
-                        pull_number: context.issue.number
-                    });
-
-                    cosnt reviewers = prDetails.data.requested_reviewers.map(reviewer => reviewer.login);
-
-                    const reviews = await github.pulls.listReviews({
-                        owner: context.repo.owner,
-                        repo: context.repo.repo,
-                        pull_number: context.issue.number
-                    });
-
-                    const reviewersWhoHaveReviewed = reviews.data.map(review => review.user.login);
-
-                    const reviewersWhoHaveNotReviewed = reviewers.filter(reviewer => !reviewersWhoHaveReviewed.includes(reviewer));
-
-                    if (reviewersWhoHaveNotReviewed.length > 0) {
-                        const comment = reviewersWhoHaveNotReviewed.map(reviewer => `@${reviewer}`).join(' ');
-                        github.issues.createComment({
-                            owner: context.repo.owner,
-                            repo: context.repo.repo,
-                            issue_number: context.issue.number,
-                            body: `Ping for Attention: ${comment}`
-                        });
-                    }
-                    
-
-        
-=======
   ping-for-attention:
     if: >
       github.event.issue.pull_request &&
@@ -99,4 +51,3 @@ jobs:
                 body: `${comment} Please take a look at this PR. Thanks! :wave:`
               });
             }
->>>>>>> Stashed changes
