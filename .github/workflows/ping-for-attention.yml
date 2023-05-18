@@ -34,7 +34,7 @@ jobs:
                         pull_number: context.issue.number
                     });
 
-                    cosnt reviewers = prDetails.data.requested_reviewers.map(reviewer => reviewer.login);
+                    const reviewers = prDetails.data.requested_reviewers.map(reviewer => reviewer.login);
 
                     const reviews = await github.pulls.listReviews({
                         owner: context.repo.owner,
