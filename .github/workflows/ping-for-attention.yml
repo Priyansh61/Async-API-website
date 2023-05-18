@@ -28,13 +28,10 @@ jobs:
         with:
           github-token: ${{ secrets.GH_TOKEN }}
           script: |
-            const prDetails = await github.pulls.get({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.issue.number
-            });
+            const prDetailsUrl = context.payload.issue.pull_request.url;
+            const { data: pull } = await github.request(prDetailsUrl);
 
-            const reviewers = prDetails.data.requested_reviewers.map(reviewer => reviewer.login);
+            const reviewers = pull.data.requested_reviewers.map(reviewer => reviewer.login);
 
             const reviews = await github.pulls.listReviews({
               owner: context.repo.owner,
