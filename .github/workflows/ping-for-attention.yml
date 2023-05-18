@@ -1,9 +1,9 @@
 # This action is centrally managed in https://github.com/asyncapi/.github/
 # Don't make changes to this file in this repo as they will be overwritten with changes made to the same file in above mentioned repo
 
-# It uses Github actions to listen for comments on issues and pull requests and 
+# It uses Github actions to listen for comments on issues and prDetails requests and 
 # if the comment contains /ping-for-attention or /pfa it will add a comment pinging 
-# the code-owners who have not yet reviewed the pull request
+# the code-owners who have not yet reviewed the prDetails request
 
 name: ping-for-attention
 
@@ -14,7 +14,7 @@ on:
 jobs:
   ping-for-attention:
     if: >
-      github.event.issue.pull_request &&
+      github.event.issue.prDetails_request &&
       github.event.issue.state != 'closed' &&
       github.actor != 'asyncapi-bot' &&
       (
@@ -28,23 +28,29 @@ jobs:
         with:
           github-token: ${{ secrets.GH_TOKEN }}
           script: |
-            const prDetailsUrl = context.payload.issue.pull_request.url;
-            const { data: pull } = await github.request(prDetailsUrl);
-            const reviewers = pull.requested_reviewers.map(reviewer => reviewer.login);
+            const { data: prDetails } = await github.rest.pulls.get({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
 
-            const reviewsUrl = pull.url + '/reviews';
-            const { data: reviews } = await github.request(reviewsUrl);
-            console.log("reviews",reviews);
+            const reviewers = prDetails.requested_reviewers.map(reviewer => reviewer.login);
+
+            const { data: reviews } = await github.rest.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
             const reviewersWhoHaveReviewed = reviews.map(review => review.user.login);
-            console.log("reviewersWhoHave",reviewersWhoHaveReviewed);
+
             const reviewersWhoHaveNotReviewed = reviewers.filter(reviewer => !reviewersWhoHaveReviewed.includes(reviewer));
-            console.log("reviewed",reviewersWhoHaveNotReviewed);
+
             if (reviewersWhoHaveNotReviewed.length > 0) {
               const comment = reviewersWhoHaveNotReviewed.map(reviewer => `@${reviewer}`).join(' ');
               await github.rest.issues.createComment({
                 issue_number: context.issue.number,
                 owner: context.repo.owner,
                 repo: context.repo.repo,
-                body: `@${context.actor} asked for your review ${comment}`
+                body: `${comment} Please take a look. Thanks!`}`
               });
             }
