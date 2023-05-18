@@ -32,7 +32,7 @@ jobs:
             const { data: pull } = await github.request(prDetailsUrl);
             const reviewers = pull.requested_reviewers.map(reviewer => reviewer.login);
 
-            const reviews = await github.rest.pulls.listReviews({
+            const { data: reviews } = await github.rest.pulls.listReviews({
               owner: context.repo.owner,
               repo: context.repo.repo,
               pull_number: context.issue.number
