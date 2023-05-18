@@ -30,19 +30,15 @@ jobs:
           script: |
             const prDetailsUrl = context.payload.issue.pull_request.url;
             const { data: pull } = await github.request(prDetailsUrl);
-            console.log(pull);
             const reviewers = pull.requested_reviewers.map(reviewer => reviewer.login);
 
-            const reviews = await github.pulls.listReviews({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              pull_number: context.issue.number
-            });
-            console.log(reviews);
-            const reviewersWhoHaveReviewed = reviews.data.map(review => review.user.login);
-            console.log(reviewersWhoHaveReviewed);
+            const reviewsUrl = pull.url + '/reviews';
+            const { data: reviews } = await github.request(reviewsUrl);
+            console.log("reviews",reviews);
+            const reviewersWhoHaveReviewed = reviews.map(review => review.user.login);
+            console.log("reviewersWhoHave",reviewersWhoHaveReviewed);
             const reviewersWhoHaveNotReviewed = reviewers.filter(reviewer => !reviewersWhoHaveReviewed.includes(reviewer));
-            console.log(reviewersWhoHaveNotReviewed);
+            console.log("reviewed",reviewersWhoHaveNotReviewed);
             if (reviewersWhoHaveNotReviewed.length > 0) {
               const comment = reviewersWhoHaveNotReviewed.map(reviewer => `@${reviewer}`).join(' ');
               github.issues.createComment({
