@@ -12,6 +12,7 @@ on:
         types: [created]
 
 jobs:
+<<<<<<< Updated upstream
     ping-for-attention: 
         if: >
             github.event.issue.pull_request &&
@@ -58,3 +59,44 @@ jobs:
                     
 
         
+=======
+  ping-for-attention:
+    if: >
+      github.event.issue.pull_request &&
+      github.event.issue.state != 'closed' &&
+      github.actor != 'asyncapi-bot' && 
+      (
+        contains(github.event.comment.body, '/ping-for-attention') ||
+        contains(github.event.comment.body, '/pfa')
+      )
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check for Ping for Attention Command
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GH_TOKEN }}
+          script: |
+            const prDetailsUrl = context.payload.issue.pull_request.url;
+            const { data: pull } = await github.request(prDetailsUrl);
+            const reviewers = pull.requested_reviewers.map(reviewer => reviewer.login);
+
+            const { data: reviews } = await github.rest.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number
+            });
+
+            const reviewersWhoHaveReviewed = reviews.map(review => review.user.login);
+
+            const reviewersWhoHaveNotReviewed = reviewers.filter(reviewer => !reviewersWhoHaveReviewed.includes(reviewer));
+
+            if (reviewersWhoHaveNotReviewed.length > 0) {
+              const comment = reviewersWhoHaveNotReviewed.map(reviewer => `@${reviewer}`).join(' ');
+              await github.rest.issues.createComment({
+                issue_number: context.issue.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: `${comment} Please take a look at this PR. Thanks! :wave:`
+              });
+            }
+>>>>>>> Stashed changes
