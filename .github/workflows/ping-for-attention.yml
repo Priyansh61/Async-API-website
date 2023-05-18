@@ -41,10 +41,14 @@ jobs:
             console.log("reviewed",reviewersWhoHaveNotReviewed);
             if (reviewersWhoHaveNotReviewed.length > 0) {
               const comment = reviewersWhoHaveNotReviewed.map(reviewer => `@${reviewer}`).join(' ');
-              github.issues.createComment({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                issue_number: context.issue.number,
-                body: `Ping for Attention: ${comment}`
-              });
+              const commentUrl = pull.url + '/comments';
+                await github.request(commentUrl, {
+                    method: 'POST',
+                    headers: {
+                    'content-type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                    body: `@${github.actor} pinged ${comment} for attention`,
+                    }),
+                });
             }
