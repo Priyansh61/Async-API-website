@@ -14,11 +14,11 @@ on:
 jobs:
   ping-for-attention:
     if: >
-      github.event.issue.prDetails_request &&
+      github.event.issue.pull_request &&
       github.event.issue.state != 'closed' &&
       github.actor != 'asyncapi-bot' &&
       (
-        contains(github.event.comment.body, '/re') ||
+        contains(github.event.comment.body, '/ping-for-attention') ||
         contains(github.event.comment.body, '/pfa')
       )
     runs-on: ubuntu-latest
