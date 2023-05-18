@@ -30,6 +30,8 @@ jobs:
           script: |
             const prDetailsUrl = context.payload.issue.pull_request.url;
             const { data: pull } = await github.request(prDetailsUrl);
+            // change the pull datatype to json
+            pull.data = JSON.parse(JSON.stringify(pull.data));
             const reviewers = pull.data["requested_reviewers"].map(reviewer => reviewer.login);
 
             const reviews = await github.pulls.listReviews({
