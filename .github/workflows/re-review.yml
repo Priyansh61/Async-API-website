@@ -51,11 +51,16 @@ jobs:
                                 pullRequestId: "${pullRequestId}", 
                                 userIds: ${JSON.stringify(userIdNodeArray)} 
                             }) { 
+                                clientMutationId,
                                 pullRequest { 
                                     id 
-                                } 
+                                },
+                                actor {
+                                    login
+                                }
                             }
-                        `;
+                        }`;
+                    
                         const { data } = await github.graphql(mutationQuery);
                         console.log("Data: ", data);
                     }
