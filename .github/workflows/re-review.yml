@@ -45,22 +45,19 @@ jobs:
                     console.log("User ID Node Array: ", userIdNodeArray);
 
                     if (userID.length > 0) {
-                        for (const user of userIdNodeArray) {
-                            const mutation = `mutation { 
-                                requestReviews(input: {pullRequestId:"${pullRequestId}", userIds:"${userId}"}) {
-                                    clientMutationId,
-                                    pullRequest {
-                                        id
-                                    }
-                                    actor {
-                                        login
-                                    }
+                        const mutationQuery = `
+                        mutation { 
+                            requestReviews(input: { 
+                                pullRequestId: "${pullRequestId}", 
+                                userIds: ${JSON.stringify(userIdNodeArray)} 
+                            }) { 
+                                pullRequest { 
+                                    id 
                                 } 
-                            }`;
-
-                            const { requestReviews } = await github.graphql(mutation);
-                            console.log(requestReviews);
-                        }
+                            }
+                        `;
+                        const { data } = await github.graphql(mutationQuery);
+                        console.log("Data: ", data);
                     }
                 
 
