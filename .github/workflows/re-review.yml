@@ -35,19 +35,17 @@ jobs:
 
                     const userIDmatches = comment.match(userIDregex);
                     console.log("User ID Matches: ", userIDmatches);
-                    const userID = Array.from(userIDmatches).map((match) => match.replace('@', ''));
-                    // get node id of the user
-                    const userId = await github.query(`
-                        query {
-                            user(login: "${userID}") {
-                                id
-                            }
-                        }
-                    `);
-                    console.log("User ID: ", userId);
+                    const userIdArray = Array.from(userIDmatches).map((match) => match.replace('@', ''));
+                    /const userIdNodeArray = [];
+                    for (const user of userID) {
+                        const { data } = await github.request(`https://api.github.com/users/${user}`);
+                        const userId = data.node_id;
+                        userIdNodeArray.push(userId);
+                    }
+                    console.log("User ID Node Array: ", userIdNodeArray);
 
                     if (userID.length > 0) {
-                        for (const user of userID) {
+                        for (const user of userIdNodeArray) {
                             const mutation = `mutation { 
                                 requestReviews(input: {pullRequestId:"${pullRequestId}", userIds:"${userId}"}) {
                                     clientMutationId,
