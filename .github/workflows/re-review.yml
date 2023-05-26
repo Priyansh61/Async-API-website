@@ -28,7 +28,8 @@ jobs:
                 script: |
                     const comment = context.payload.comment.body;
                     console.log("Comment: ", comment);
-                    const pullRequestID = context.payload.issue.pull_request.id;
+                    // get pr id
+                    console.log("Pull Request: ", context.payload.issue);
                     console.log("Pull Request ID: ", pullRequestID);
                     const userIDregex = /@([A-Za-z0-9-]+)/g;
 
