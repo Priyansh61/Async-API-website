@@ -28,15 +28,23 @@ jobs:
                 script: |
                     const comment = context.payload.comment.body;
                     console.log("Comment: ", comment);
-                    // get pr id
-                    console.log("Pull Request: ", context.payload.issue);
-                    console.log("Pull Request ID: ", pullRequestID);
+                    const prDetailsUrl = context.payload.issue.pull_request.url;
+                    const { data } = await github.request(prDetailsUrl);
+                    const pullRequestId = data.node_id;
                     const userIDregex = /@([A-Za-z0-9-]+)/g;
 
                     const userIDmatches = comment.match(userIDregex);
                     console.log("User ID Matches: ", userIDmatches);
                     const userID = Array.from(userIDmatches).map((match) => match.replace('@', ''));
-                    console.log("User ID: ", userID);
+                    // get node id of the user
+                    const userId = await github.query(`
+                        query {
+                            user(login: "${userID}") {
+                                id
+                            }
+                        }
+                    `);
+                    console.log("User ID: ", userId);
 
                     if (userID.length > 0) {
                         for (const user of userID) {
