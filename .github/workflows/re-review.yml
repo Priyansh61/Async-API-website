@@ -1,0 +1,61 @@
+# This action is centrally managed in https://github.com/asyncapi/.github/
+# Don't make changes to this file in this repo as they will be overwritten with changes made to the same file in above mentioned repo
+
+# This action is used to call the reviewer to review the PR
+
+name: Review
+
+on:
+    issue_comment:
+        types: [created]
+
+jobs: 
+    review:
+        if : >
+            github.event.issue.pull_request &&
+            github.event.issue.state != 'closed' &&
+            github.actor != 'asyncapi-bot' && 
+            (
+                contains(github.event.comment.body, '/review') ||
+                contains(github.event.comment.body, '/rerequest ')
+            )
+        runs-on: ubuntu-latest
+        steps:
+            - name: Check for Ping for Attention Command
+              uses: actions/github-script@v6
+              with:
+                github-token: ${{ secrets.GITHUB_TOKEN }}
+                script: |
+                    const comment = context.payload.comment.body;
+                    console.log("Comment: ", comment);
+                    const pullRequestID = context.payload.pull_request.id;
+                    console.log("Pull Request ID: ", pullRequestID);
+                    const userIDregex = /@([A-Za-z0-9-]+)/g;
+
+                    const userIDmatches = comment.match(userIDregex);
+                    console.log("User ID Matches: ", userIDmatches);
+                    const userID = Array.from(userIDmatches).map((match) => match.replace('@', ''));
+                    console.log("User ID: ", userID);
+
+                    if (userID.length > 0) {
+                        for (const user of userID) {
+                            const mutation = `mutation { 
+                                requestReviews(input: {pullRequestId:"${pullRequestId}", userIds:"${userId}"}) {
+                                    clientMutationId,
+                                    pullRequest {
+                                        id
+                                    }
+                                    actor {
+                                        login
+                                    }
+                                } 
+                            }`;
+
+                            const { requestReviews } = await github.graphql(mutation);
+                            console.log(requestReviews);
+                        }
+                    }
+                
+
+
+                    
