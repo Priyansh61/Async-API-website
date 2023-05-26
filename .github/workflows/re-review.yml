@@ -44,7 +44,7 @@ jobs:
                     }
                     console.log("User ID Node Array: ", userIdNodeArray);
 
-                    if (userID.length > 0) {
+                    if (userIdNodeArray.length > 0) {
                         const mutationQuery = `
                         mutation { 
                             requestReviews(input: { 
