@@ -36,7 +36,7 @@ jobs:
                     const userIDmatches = comment.match(userIDregex);
                     console.log("User ID Matches: ", userIDmatches);
                     const userIdArray = Array.from(userIDmatches).map((match) => match.replace('@', ''));
-                    /const userIdNodeArray = [];
+                    const userIdNodeArray = [];
                     for (const user of userID) {
                         const { data } = await github.request(`https://api.github.com/users/${user}`);
                         const userId = data.node_id;
