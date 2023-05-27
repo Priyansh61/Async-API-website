@@ -1,7 +1,11 @@
 # This action is centrally managed in https://github.com/asyncapi/.github/
 # Don't make changes to this file in this repo as they will be overwritten with changes made to the same file in above mentioned repo
 
-# This action is used to call the reviewer to review the PR
+# This action is used to call the reviewer to review the PR using the command /review
+# or /rerequest. If the user is not mentioned, then all the reviewers are called to review the PR.
+# If the user is mentioned, then only those users are called to review the PR.
+# e.g. /review @user1 @user2 this will call only user1 and user2 to review the PR
+# e.g. /review this will call all the reviewers to review the PR
 
 name: Review
 
