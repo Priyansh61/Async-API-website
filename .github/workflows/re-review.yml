@@ -40,7 +40,7 @@ jobs:
 
                     const userIDmatches = comment.match(userIDregex);
 
-                    const userIdArray = [];
+                    var userIdArray = [];
 
                     if (userIDmatches){
                         // If user is mentioned, then add only those users
