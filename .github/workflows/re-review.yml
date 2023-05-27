@@ -30,6 +30,10 @@ jobs:
                     const comment = context.payload.comment.body;
                     console.log("Comment: ", comment);
                     const prDetailsUrl = context.payload.issue.pull_request.url;
+
+                    const reviewers = pull.requested_reviewers.map(reviewer => reviewer.login);
+                    console.log("Reviewers: ", reviewers);
+
                     const { data } = await github.request(prDetailsUrl);
                     const pullRequestId = data.node_id;
                     const userIDregex = /@([A-Za-z0-9-]+)/g;
