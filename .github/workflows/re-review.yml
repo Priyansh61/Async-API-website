@@ -16,13 +16,13 @@ jobs:
             github.event.issue.pull_request &&
             github.event.issue.state != 'closed' &&
             github.actor != 'asyncapi-bot' && 
-            (
+            (             
                 contains(github.event.comment.body, '/review') ||
                 contains(github.event.comment.body, '/rerequest ')
             )
         runs-on: ubuntu-latest
         steps:
-            - name: Check for Ping for Attention Command
+            - name: Adds reviewers to the PR
               uses: actions/github-script@v6
               with:
                 github-token: ${{ secrets.GITHUB_TOKEN }}
@@ -35,20 +35,24 @@ jobs:
                     const pullRequestId = pull.node_id;
 
                     const reviewers = pull.requested_reviewers.map(reviewer => reviewer.login);
-                    console.log("Reviewers: ", reviewers);
-                    
+
                     const userIDregex = /@([A-Za-z0-9-]+)/g;
 
                     const userIDmatches = comment.match(userIDregex);
-                    console.log("User ID Matches: ", userIDmatches);
+
                     const userIdArray = Array.from(userIDmatches).map((match) => match.replace('@', ''));
+
+                    // If no particular user is mentioned, then add all the reviewers
+                    if (userIdArray.length === 0) {
+                        userIdArray = reviewers;
+                    }
+
                     const userIdNodeArray = [];
                     for (const user of userIdArray) {
                         const { data } = await github.request(`https://api.github.com/users/${user}`);
                         const userId = data.node_id;
                         userIdNodeArray.push(userId);
                     }
-                    console.log("User ID Node Array: ", userIdNodeArray);
 
                     if (userIdNodeArray.length > 0) {
                         const mutationQuery = `
@@ -64,7 +68,6 @@ jobs:
                         }`;
                     
                         const { data } = await github.graphql(mutationQuery);
-                        console.log("Data: ", data);
                     }
                 
 
