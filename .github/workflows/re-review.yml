@@ -51,13 +51,9 @@ jobs:
                                 pullRequestId: "${pullRequestId}", 
                                 userIds: ${JSON.stringify(userIdNodeArray)} 
                             }) { 
-                                clientMutationId,
                                 pullRequest { 
                                     id 
-                                },
-                                actor {
-                                    login
-                                }
+                                } 
                             }
                         }`;
                     
