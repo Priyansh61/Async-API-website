@@ -40,11 +40,12 @@ jobs:
 
                     const userIDmatches = comment.match(userIDregex);
 
-                    const userIdArray = Array.from(userIDmatches).map((match) => match.replace('@', ''));
-
-                    // If no particular user is mentioned, then add all the reviewers
-                    if (userIdArray.length === 0) {
-                        userIdArray = reviewers;
+                    if (userIDmatches){
+                        const userIdArray = Array.from(userIDmatches).map((match) => match.replace('@', ''));
+                    }
+                    else {
+                        // If no user is mentioned, then add all the reviewers
+                        const userIdArray = reviewers;
                     }
 
                     const userIdNodeArray = [];
