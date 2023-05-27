@@ -11,6 +11,7 @@ on:
 
 jobs: 
     review:
+        permissions: write-all
         if : >
             github.event.issue.pull_request &&
             github.event.issue.state != 'closed' &&
